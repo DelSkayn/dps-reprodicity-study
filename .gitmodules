@@ -1,0 +1,3 @@
+[submodule "COST"]
+	path = COST
+	url = https://github.com/frankmcsherry/COST.git
