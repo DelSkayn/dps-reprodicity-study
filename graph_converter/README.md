@@ -1,1 +1,0 @@
-This directory contains a converter for the webgraph format to the format required by the rust programs.

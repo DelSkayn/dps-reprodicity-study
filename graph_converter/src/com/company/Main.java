@@ -4,7 +4,6 @@ import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.webgraph.GraphClassParser;
 import it.unimi.dsi.webgraph.ImmutableGraph;
 import it.unimi.dsi.webgraph.LazyIntIterator;
-import it.unimi.dsi.logging.ProgressLogger;
 import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import java.io.FileWriter;
@@ -12,12 +11,10 @@ import java.io.FileWriter;
 public class Main {
 
     public static void main(String[] args) {
-        String name = args[0];
 
-        final ProgressLogger pl = new ProgressLogger();
         final ImmutableGraph graph;
         try {
-            graph = ImmutableGraph.load(name, pl);
+            graph = ImmutableGraph.load(args[0]);
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -29,7 +26,7 @@ public class Main {
         int curr = 0, succ, ecc = 0, reachable = 0;
         FileWriter out;
         try {
-            out = new FileWriter("./" + name + ".net");
+            out = new FileWriter("./" + args[0] + ".net");
         }catch (Exception e){
             System.err.println("Failed to open output file");
             return;
@@ -64,9 +61,6 @@ public class Main {
                     }
                 }
             }
-            pl.update();
         }
-        pl.done();
-
     }
 }
