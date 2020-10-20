@@ -2,6 +2,9 @@
   <artifact type="jar" name="graph_converter_2:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/graph_converter_2_jar</output-path>
     <root id="archive" name="graph_converter_2.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/src/main/resources/META-INF/MANIFEST.MF" />
+      </element>
       <element id="module-output" name="graph_converter_2" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/commons-lang/commons-lang/2.6/commons-lang-2.6.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/martiansoftware/jsap/2.1/jsap-2.1.jar" path-in-jar="/" />
