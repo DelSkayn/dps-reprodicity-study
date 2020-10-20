@@ -1,66 +1,34 @@
-import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
-import it.unimi.dsi.logging.ProgressLogger;
-import it.unimi.dsi.webgraph.GraphClassParser;
 import it.unimi.dsi.webgraph.ImmutableGraph;
-import it.unimi.dsi.webgraph.LazyIntIterator;
-import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
-import it.unimi.dsi.fastutil.ints.IntArrays;
-import java.io.FileWriter;
+import it.unimi.dsi.webgraph.NodeIterator;
+
+import java.lang.reflect.InvocationTargetException;
+import java.io.*;
+
 
 public class GraphConverter {
-    public static void main(String[] args) {
-        final ProgressLogger pl = new ProgressLogger();
-        final ImmutableGraph graph;
-        try {
-            graph = ImmutableGraph.load(args[0]);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
-        final IntArrayFIFOQueue queue = new IntArrayFIFOQueue();
-        final int n = graph.numNodes();
-        final int[] dist = new int[n];
-        IntArrays.fill(dist, Integer.MAX_VALUE);
-        int curr = 0, succ, ecc = 0, reachable = 0;
-        FileWriter out;
-        try {
-            out = new FileWriter("./" + args[0] + ".net");
-        }catch (Exception e){
-            System.err.println("Failed to open output file");
+    public static void main(String[] arg) throws ClassCastException, IllegalArgumentException, SecurityException, IllegalArgumentException, IOException {
+        if ( arg.length != 1 ) {
+            System.err.println( "Usage: BV2Ascii BASENAME" );
             return;
         }
 
-        for (int i = 0; i < n; i++) {
-            if (dist[i] == Integer.MAX_VALUE) { // Not already visited
-                queue.enqueue(i);
-                dist[i] = 0;
+        final ImmutableGraph graph = it.unimi.dsi.webgraph.ImmutableGraph.loadOffline( arg[0] );
 
-                LazyIntIterator successors;
+        NodeIterator nodeIterator = graph.nodeIterator();
+        int curr, d;
+        int[] suc;
+        FileOutputStream file = new FileOutputStream(arg[0] + ".net");
+        BufferedOutputStream outStreamB = new BufferedOutputStream(file, 4096);
+        PrintStream outStream = new PrintStream( outStreamB );
 
-                while (!queue.isEmpty()) {
-                    curr = queue.dequeueInt();
-                    successors = graph.successors(curr);
-                    int d = graph.outdegree(curr);
-                    while (d-- != 0) {
-                        succ = successors.nextInt();
-                        if (dist[succ] == Integer.MAX_VALUE) {
-                            reachable++;
-                            dist[succ] = dist[curr] + 1;
-                            ecc = Math.max(ecc, dist[succ]);
-                            queue.enqueue(succ);
-                            try {
-                                out.write(String.valueOf(i) + "\t" + String.valueOf(succ) + "\n" );
-                            } catch (Exception e){
-                                System.err.println("Failed to write");
-                                e.printStackTrace();
-                                return;
-                            }
-                        }
-                    }
-                }
+        while( nodeIterator.hasNext() ) {
+            curr = nodeIterator.nextInt();
+            d = nodeIterator.outdegree();
+            suc = nodeIterator.successorArray();
+
+            for( int j=0; j<d; j++ ) {
+                outStream.println(curr + "\t " + (suc[j]) );
             }
-            pl.update();
         }
-        pl.done();
     }
 }
