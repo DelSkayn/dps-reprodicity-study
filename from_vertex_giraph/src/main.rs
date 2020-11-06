@@ -46,7 +46,6 @@ fn main() -> Result<()> {
     let mut out_writer = stdout.lock();
 
     let mut buffer: [u8; mem::size_of::<u32>()] = [0; mem::size_of::<u32>()];
-    /*
     while let Some(id) = try_read_exact(&mut nodes_reader)? {
         nodes_reader.read_exact(&mut buffer)?;
         let len = u32::from_le_bytes(buffer);
@@ -57,17 +56,6 @@ fn main() -> Result<()> {
             write!(out_writer, " {}", id)?;
         }
         writeln!(out_writer)?;
-    }
-    */
-    while let Some(node) = try_read_exact(&mut nodes_reader)? {
-        nodes_reader.read_exact(&mut buffer)?;
-        let len = u32::from_le_bytes(buffer);
-        for _ in 0..len {
-            edges_reader.read_exact(&mut buffer)?;
-            let edge = u32::from_le_bytes(buffer);
-            writeln!(out_writer, "{} \t{}", node,edge)?;
-        }
-        //writeln!(out_writer)?;
     }
     Ok(())
 }
