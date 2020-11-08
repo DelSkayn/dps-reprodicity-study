@@ -3,13 +3,8 @@ package org.apache.spark.graphx.impl;
 import org.apache.spark.SparkContext;
 import org.apache.spark.graphx.Graph;
 import org.apache.spark.graphx.GraphLoader;
-import org.apache.spark.graphx.VertexRDD;
-import org.apache.spark.graphx.lib.PageRank;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.storage.StorageLevel;
-
-import scala.Option;
-import scala.reflect.ClassTag;
 
 public class PageRankDPS {
 
@@ -31,21 +26,12 @@ public class PageRankDPS {
 		SparkContext sc = ss.sparkContext();
 		System.out.println("Started Reading Graph.");
 		Graph<Object, Object> graph = GraphLoader.edgeListFile(sc, "hdfs://" + hdfsNameNode + ":9000/" + filename, true,
-				216, StorageLevel.MEMORY_AND_DISK(), StorageLevel.MEMORY_AND_DISK());
+				800, StorageLevel.DISK_ONLY(), StorageLevel.DISK_ONLY());
 		System.out.println("Finished Reading Graph.");
-		VertexRDD<Object> vertices = graph.vertices();
-		vertices.cache();
-		ClassTag<Object> objectTag = scala.reflect.ClassTag$.MODULE$.apply(String.class);
-		Graph<Object, Object> preRankGraph = null;
 		for (int i = 0; i < loop; i++) {
-			System.out.println("Running pagerank Iteration:" + i);
+			System.out.println("Running pagerank Test:" + i);
 			long startTime = System.currentTimeMillis();
-			if (i == 0) {
-				preRankGraph = PageRank.run(graph, 1, 0.15, objectTag, objectTag);
-			} else {
-				preRankGraph = PageRank.runWithOptionsWithPreviousPageRank(graph, 1, 0.15, Option.empty(), preRankGraph,
-						objectTag, objectTag);
-			}
+			graph.ops().staticPageRank(20, 0.15);
 			long endTime = System.currentTimeMillis();
 			long duration = (endTime - startTime);
 			System.out.println("Finished running pagerank.");
